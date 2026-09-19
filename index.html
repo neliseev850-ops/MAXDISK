@@ -1,118 +1,1150 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мастер в Новотроицке</title>
-    <style>
-        :root {
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --accent: #2c3e50;
-            --secondary: #3498db;
-            --text-color: #2c3e50;
-        }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; line-height: 1.6; }
-        header { background-color: var(--accent); padding: 40px 20px; text-align: center; color: #fff; }
-        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-        h2 { border-bottom: 2px solid var(--secondary); display: inline-block; padding-bottom: 5px; margin-top: 40px; }
-        
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 10px; border-top: 4px solid var(--secondary); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        
-        /* Таблица */
-        table { width: 100%; border-collapse: collapse; background: white; margin-bottom: 40px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: var(--accent); color: white; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f0f0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>MAX</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, "SF Pro Display", system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: #000;
+    color: #fff;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    position: fixed;
+    width: 100%;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .phone {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    background: #0f0f0f;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  /* Только на десктопе — скруглённый "телефон" */
+  @media (min-width: 500px) and (hover: hover) {
+    .phone { max-width: 420px; height: 880px; border-radius: 32px; box-shadow: 0 20px 60px rgba(0,0,0,0.8); padding-top: 0; padding-bottom: 0; }
+  }
 
-        /* Галерея видео */
-        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .video-item { background: #e0e0e0; border-radius: 10px; padding: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; }
-        video { width: 100%; height: 350px; object-fit: cover; border-radius: 6px; display: block; }
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    background: #0f0f0f;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .screen.active { display: flex; }
 
-        .contact-box { background: var(--accent); color: white; padding: 30px; text-align: center; border-radius: 10px; margin-top: 40px; }
-        .phone { font-size: 1.4em; font-weight: bold; color: var(--secondary); margin: 5px 0; }
-        .email { font-size: 1.2em; color: #fff; margin-top: 10px; }
-    </style>
+  .page-header {
+    padding: 16px;
+    background: #0f0f0f;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .page-header h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .page-header .back { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0 4px 0 0; }
+
+  .chats-header {
+    padding: 14px 16px 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .chats-header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .header-actions { display: flex; gap: 10px; }
+  .header-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    border: none; color: #fff; font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .header-btn.plus { background: #2ecc71; color: #fff; font-size: 22px; }
+
+  .chat-list { flex: 1; overflow-y: auto; padding: 12px 0 80px; -webkit-overflow-scrolling: touch; }
+  .chat-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; cursor: pointer;
+    transition: 0.15s;
+  }
+  .chat-item:active { background: #1a1a1a; }
+  .chat-item .ava-wrap { position: relative; flex-shrink: 0; }
+  .chat-item .ava {
+    width: 54px; height: 54px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 20px; color: #fff; overflow: hidden;
+  }
+  .chat-item .ava img { width: 100%; height: 100%; object-fit: cover; }
+  .chat-item .status-dot {
+    position: absolute; right: 0; bottom: 2px;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: #2ecc71; border: 2px solid #0f0f0f;
+  }
+  .chat-item .info { flex: 1; min-width: 0; }
+  .chat-item .info h4 { font-size: 15.5px; font-weight: 600; margin-bottom: 3px; }
+  .chat-item .info p {
+    font-size: 13.5px; color: #8a8a8a;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
+  }
+  .chat-item .meta {
+    text-align: right; font-size: 12px; color: #8a8a8a;
+    flex-shrink: 0; align-self: flex-start; padding-top: 4px;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  }
+  .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #2ecc71; color: #fff;
+    font-size: 11px; font-weight: 700;
+    min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px;
+  }
+
+  .bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 64px;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: #0f0f0f;
+    border-top: 1px solid #1a1a1a;
+    display: flex; align-items: center; justify-content: space-around;
+    z-index: 10;
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; color: #666; font-size: 10.5px; cursor: pointer;
+    position: relative; padding: 6px 0;
+    min-height: 44px;
+  }
+  .nav-item.active { color: #2ecc71; }
+  .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
+  .nav-item .nav-badge {
+    position: absolute; top: 2px; right: calc(50% - 20px);
+    background: #ff3b30; color: #fff;
+    font-size: 10px; font-weight: 700;
+    min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .chat-header {
+    padding: 10px 14px;
+    background: #0f0f0f;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .chat-header .back { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0 4px 0 0; }
+  .chat-header .ava {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 16px; overflow: hidden;
+  }
+  .chat-header .ava img { width: 100%; height: 100%; object-fit: cover; }
+  .chat-header .hinfo { flex: 1; }
+  .chat-header .hinfo h3 { font-size: 15px; font-weight: 600; }
+  .chat-header .hinfo p { font-size: 12px; color: #8a8a8a; }
+
+  .messages {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 16px 14px 90px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .msg {
+    max-width: 78%; padding: 9px 13px;
+    border-radius: 18px; font-size: 14.5px; line-height: 1.35;
+    word-wrap: break-word;
+  }
+  .msg.bot { background: #222; align-self: flex-start; border-bottom-left-radius: 6px; }
+  .msg.me { background: #2ecc71; color: #fff; align-self: flex-end; border-bottom-right-radius: 6px; }
+  .msg.file-card {
+    background: #222; align-self: flex-end;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; padding: 9px 12px; max-width: 82%;
+  }
+  .msg.file-card:active { background: #2a2a2a; }
+  .file-ico {
+    width: 40px; height: 40px; background: #2ecc71;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0; overflow: hidden;
+  }
+  .file-ico img { width: 100%; height: 100%; object-fit: cover; }
+  .file-meta small { display: block; color: #8a8a8a; font-size: 11px; margin-top: 2px; }
+
+  .input-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 10px 12px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    background: #0f0f0f;
+    display: flex; gap: 8px; align-items: center;
+    border-top: 1px solid #1a1a1a;
+  }
+  .input-bar input[type="text"] {
+    flex: 1; background: #1e1e1e; border: none; border-radius: 22px;
+    padding: 11px 16px; color: #fff; font-size: 16px; outline: none;
+    min-width: 0;
+  }
+  .input-bar input::placeholder { color: #666; }
+  .icon-btn {
+    background: transparent; border: none; color: #b0b0b0;
+    width: 40px; height: 40px; border-radius: 50%;
+    cursor: pointer; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: 0.15s;
+    min-width: 40px;
+  }
+  .icon-btn:active { color: #fff; }
+  .icon-btn.send { color: #2ecc71; }
+  .icon-btn.call { color: #2ecc71; }
+  .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
+
+  .contacts-list, .calls-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 0 80px; }
+  .contact-item, .call-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; cursor: pointer;
+    transition: 0.15s;
+  }
+  .contact-item:active, .call-item:active { background: #1a1a1a; }
+  .contact-item .ava, .call-item .ava {
+    width: 50px; height: 50px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 18px; color: #fff; flex-shrink: 0;
+  }
+  .contact-item .cinfo, .call-item .info { flex: 1; min-width: 0; }
+  .contact-item .cinfo h4, .call-item .info h4 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .contact-item .cinfo p { font-size: 13px; color: #8a8a8a; }
+  .contact-item .cactions { display: flex; gap: 4px; }
+  .contact-item .cactions button, .call-item .call-back {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: transparent; border: none;
+    color: #2ecc71; font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .contact-item .cactions button:active, .call-item .call-back:active { background: #1e1e1e; }
+  .call-item .info p { font-size: 13px; color: #8a8a8a; display: flex; align-items: center; gap: 5px; }
+  .call-item .info p.in { color: #2ecc71; }
+  .call-item .info p.miss { color: #ff3b30; }
+
+  .settings-empty {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: #666; font-size: 18px; padding: 40px;
+    text-align: center; line-height: 1.6;
+  }
+
+  .miniapp { flex: 1; display: flex; flex-direction: column; background: #0f0f0f; overflow: hidden; }
+  .miniapp-header {
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .miniapp-header .logo {
+    width: 44px; height: 44px; background: rgba(255,255,255,0.22);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .miniapp-header h3 { font-size: 16px; font-weight: 700; }
+  .miniapp-header p { font-size: 12px; opacity: 0.9; }
+
+  .file-grid {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-content: start;
+  }
+  @media (max-width: 340px) {
+    .file-grid { grid-template-columns: 1fr; }
+  }
+  .file-card {
+    background: #1a1a1a; border-radius: 14px; padding: 12px;
+    cursor: pointer; transition: 0.15s;
+    display: flex; flex-direction: column; gap: 10px;
+    position: relative;
+  }
+  .file-card:active { background: #222; }
+  .file-card .fico {
+    width: 100%; aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px; overflow: hidden; background: #222;
+  }
+  .file-card .fico img { width: 100%; height: 100%; object-fit: cover; }
+  .file-card h5 { font-size: 13px; line-height: 1.3; word-break: break-all; font-weight: 500; }
+  .file-card small { color: #8a8a8a; font-size: 11px; }
+
+  /* Кнопка удаления на карточке */
+  .file-del {
+    position: absolute; top: 6px; right: 6px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(255,59,48,0.9); color: #fff;
+    border: none; cursor: pointer;
+    font-size: 14px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2;
+  }
+  .file-del:active { background: #e74c3c; }
+
+  .upload-bar {
+    padding: 12px 14px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    background: #0f0f0f;
+    border-top: 1px solid #1a1a1a;
+    flex-shrink: 0;
+  }
+  .upload-bar button {
+    width: 100%; padding: 13px;
+    background: #2ecc71; border: none; color: #fff;
+    border-radius: 24px; font-size: 15px; font-weight: 700;
+    cursor: pointer;
+  }
+  .upload-bar button:active { background: #27ae60; }
+
+  /* ===== ЗВОНОК ===== */
+  .call-screen {
+    background: radial-gradient(circle at 50% 40%, #1e3a2e 0%, #0f0f0f 60%);
+    position: relative;
+  }
+  .call-top {
+    padding: 18px 20px 0;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
+  .call-round-btn {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: none;
+    color: #fff; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+  .call-round-btn svg { width: 22px; height: 22px; fill: currentColor; }
+
+  .call-center {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding-bottom: 140px;
+    overflow: hidden;
+  }
+  .call-name { font-size: 26px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.3px; text-align: center; padding: 0 20px; }
+  .call-timer { font-size: 15px; color: #b0b0b0; font-variant-numeric: tabular-nums; margin-bottom: 30px; }
+  .call-ava {
+    width: 160px; height: 160px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 64px; font-weight: 600; color: #fff;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(46,204,113,0.25);
+    max-width: 50vw; max-height: 50vw;
+  }
+  .call-ava img { width: 100%; height: 100%; object-fit: cover; }
+  @media (min-height: 700px) {
+    .call-ava { width: 200px; height: 200px; font-size: 80px; }
+  }
+
+  .call-hint {
+    margin: 24px 20px 0;
+    padding: 12px 16px;
+    background: rgba(46,204,113,0.12);
+    border: 1px solid rgba(46,204,113,0.3);
+    border-radius: 14px;
+    font-size: 13px; color: #6ee79d;
+    text-align: center; line-height: 1.45;
+  }
+
+  .call-controls {
+    position: absolute;
+    bottom: calc(30px + env(safe-area-inset-bottom));
+    left: 50%; transform: translateX(-50%);
+    background: rgba(28,28,28,0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 40px;
+    padding: 8px 12px;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    max-width: calc(100vw - 24px);
+  }
+  .call-ctrl {
+    width: 52px; height: 52px; border-radius: 50%;
+    border: none; background: transparent; color: #fff;
+    font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.15s;
+    flex-shrink: 0;
+  }
+  .call-ctrl:active { background: rgba(255,255,255,0.08); }
+  .call-ctrl svg { width: 22px; height: 22px; fill: currentColor; }
+  .call-ctrl.red { background: #ff3b30; color: #fff; }
+  .call-ctrl.red svg { width: 24px; height: 24px; }
+  .call-ctrl.disk { background: #2ecc71; color: #fff; }
+
+  .disk-overlay {
+    position: absolute; inset: 0;
+    background: #0f0f0f;
+    display: none; flex-direction: column; z-index: 50;
+  }
+  .disk-overlay.active { display: flex; }
+  .overlay-header {
+    padding: 16px;
+    background: #0f0f0f;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #1a1a1a;
+    flex-shrink: 0;
+  }
+  .overlay-header h3 { font-size: 16px; font-weight: 600; }
+  .overlay-header .close {
+    background: none; border: none; color: #fff;
+    font-size: 26px; cursor: pointer; padding: 0 8px;
+    min-width: 40px; min-height: 40px;
+  }
+  .overlay-files {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .ov-file {
+    background: #1a1a1a; border-radius: 14px; padding: 12px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; transition: 0.15s;
+    position: relative;
+  }
+  .ov-file:active { background: #222; }
+  .ov-file .fico {
+    width: 46px; height: 46px; font-size: 20px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0; background: #222; color: #2ecc71;
+  }
+  .ov-file .fico img { width: 100%; height: 100%; object-fit: cover; }
+  .ov-file .oinfo { flex: 1; min-width: 0; }
+  .ov-file .oinfo h4 { font-size: 14.5px; margin-bottom: 2px; word-break: break-all; font-weight: 500; }
+  .ov-file .oinfo small { color: #8a8a8a; font-size: 12px; }
+  .ov-del {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: transparent; color: #ff3b30;
+    border: none; cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ov-del:active { background: rgba(255,59,48,0.15); }
+
+  .viewer {
+    position: absolute; inset: 0;
+    background: #0f0f0f;
+    display: none; flex-direction: column; z-index: 100;
+  }
+  .viewer.active { display: flex; }
+
+  .live-banner {
+    display: none; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255,59,48,0.15);
+    border-bottom: 1px solid rgba(255,59,48,0.3);
+    font-size: 13px; color: #ff6b60; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .live-banner.active { display: flex; }
+  .live-dot {
+    width: 8px; height: 8px; background: #ff3b30; border-radius: 50%;
+    animation: blink 1.2s infinite;
+    flex-shrink: 0;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .live-banner small { margin-left: auto; font-weight: 400; color: #8a8a8a; font-size: 12px; }
+
+  .viewer-body {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 20px;
+    display: flex; align-items: flex-start; justify-content: center;
+  }
+  .viewer-body img {
+    max-width: 100%; border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  .docx-render {
+    background: #fff; color: #000;
+    padding: 24px; border-radius: 8px;
+    width: 100%; max-width: 100%;
+    font-size: 14px; line-height: 1.7;
+    word-break: break-word;
+  }
+  .docx-render p { margin-bottom: 10px; color: #222; }
+  .docx-render h1, .docx-render h2, .docx-render h3 { margin: 14px 0 8px; color: #000; }
+  .docx-render table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+  .docx-render td, .docx-render th { border: 1px solid #ccc; padding: 6px 8px; font-size: 13px; }
+
+  .empty-state {
+    color: #666; text-align: center;
+    padding: 40px 20px; font-size: 14px; line-height: 1.6;
+  }
+
+  .av1 { background: linear-gradient(135deg, #ff5e7e, #ff8a5b); }
+  .av2 { background: linear-gradient(135deg, #4a90e2, #357abd); }
+  .av3 { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+  .av4 { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+  .av5 { background: linear-gradient(135deg, #f39c12, #e67e22); }
+  .av6 { background: linear-gradient(135deg, #1abc9c, #16a085); }
+  .av7 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+  .av8 { background: linear-gradient(135deg, #3498db, #2980b9); }
+  .av9 { background: linear-gradient(135deg, #34495e, #2c3e50); }
+  .av10 { background: linear-gradient(135deg, #fd79a8, #e84393); }
+
+  .back-btn { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0; }
+
+  /* Скрытый input для файлов */
+  #fileInput { position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none; }
+</style>
 </head>
 <body>
 
-<header>
-    <h1>Мастер в Новотроицке</h1>
-    <p>Все виды работ: от ремонта бытовой техники до строительства срубов под ключ</p>
-</header>
+<div class="phone">
 
-<div class="container">
-    
-    <h2>Наши услуги</h2>
-    <div class="services-grid">
-        <div class="card">
-            <h3>🏠 Ремонт и строительство</h3>
-            <p>Ремонт квартир, строительство бань, беседок и домов. Поставка леса и дров из Башкирии.</p>
-        </div>
-        <div class="card">
-            <h3>🛠 Сантехника и Электрика</h3>
-            <p>Ремонт сантехники, электрики, ремонт бытовой техники (холодильники, стиральные, посудомоечные машины, микроволновки).</p>
-        </div>
-        <div class="card">
-            <h3>♻️ Скупка и прием</h3>
-            <ul style="list-style: none; padding: 0;">
-                <li><strong>Бензопилы:</strong> 61-48-28</li>
-                <li><strong>Баллоны:</strong> 66-01-22</li>
-                <li><strong>Бытовая техника:</strong> 66-01-22</li>
-                <li><strong>Металлолом:</strong> 61-48-28</li>
-            </ul>
-        </div>
-        <div class="card">
-            <h3>🚛 Грузоперевозки</h3>
-            <p>Перевозки любой сложности по Новотроицку и межгород.</p>
-        </div>
+  <div class="screen active" id="screen-chats">
+    <div class="chats-header">
+      <h1>Чаты</h1>
+      <div class="header-actions">
+        <button class="header-btn">🔍</button>
+        <button class="header-btn plus">＋</button>
+      </div>
+    </div>
+    <div class="chat-list" id="chatList"></div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTab('contacts')">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v3h20v-3c0-3.33-6.66-5-10-5z"/></svg>
+        <span>Контакты</span>
+      </div>
+      <div class="nav-item" onclick="goTab('calls')">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        <span>Звонки</span>
+      </div>
+      <div class="nav-item active" onclick="goTab('chats')">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        <div class="nav-badge">10</div>
+        <span>Чаты</span>
+      </div>
+      <div class="nav-item" onclick="goTab('settings')">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span>Настройки</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-contacts">
+    <div class="page-header"><h2>Контакты</h2></div>
+    <div class="contacts-list" id="contactsList"></div>
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v3h20v-3c0-3.33-6.66-5-10-5z"/></svg>
+        <span>Контакты</span>
+      </div>
+      <div class="nav-item" onclick="goTab('calls')">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        <span>Звонки</span>
+      </div>
+      <div class="nav-item" onclick="goTab('chats')">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        <span>Чаты</span>
+      </div>
+      <div class="nav-item" onclick="goTab('settings')">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span>Настройки</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-calls">
+    <div class="page-header"><h2>Звонки</h2></div>
+    <div class="calls-list" id="callsList"></div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTab('contacts')">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v3h20v-3c0-3.33-6.66-5-10-5z"/></svg>
+        <span>Контакты</span>
+      </div>
+      <div class="nav-item active">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        <span>Звонки</span>
+      </div>
+      <div class="nav-item" onclick="goTab('chats')">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        <span>Чаты</span>
+      </div>
+      <div class="nav-item" onclick="goTab('settings')">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span>Настройки</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-settings">
+    <div class="page-header"><h2>Настройки</h2></div>
+    <div class="settings-empty">А сюда не надо</div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTab('contacts')">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v3h20v-3c0-3.33-6.66-5-10-5z"/></svg>
+        <span>Контакты</span>
+      </div>
+      <div class="nav-item" onclick="goTab('calls')">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        <span>Звонки</span>
+      </div>
+      <div class="nav-item" onclick="goTab('chats')">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        <span>Чаты</span>
+      </div>
+      <div class="nav-item active">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span>Настройки</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-chat">
+    <div class="chat-header" id="chatHeader"></div>
+    <div class="messages" id="messages"></div>
+    <div class="input-bar" id="chatInputBar"></div>
+  </div>
+
+  <div class="screen" id="screen-miniapp">
+    <div class="miniapp-header">
+      <button class="back-btn" onclick="showScreen('screen-chat')">←</button>
+      <div class="logo">💾</div>
+      <div>
+        <h3>MAX-Диск</h3>
+        <p>Мини-приложение</p>
+      </div>
+    </div>
+    <div class="file-grid" id="fileGrid"></div>
+    <div class="upload-bar">
+      <button onclick="triggerUpload('miniapp')">＋ Загрузить файл</button>
+    </div>
+  </div>
+
+  <div class="screen call-screen" id="screen-call">
+    <div class="call-top">
+      <button class="call-round-btn" onclick="endCall()">
+        <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+      </button>
+      <button class="call-round-btn">⋮</button>
     </div>
 
-    <h2>Видео наших работ</h2>
-    <div class="video-grid">
-        <div class="video-item"><video controls src="video/18566116215329.mp4"></video></div>
-        <div class="video-item"><video controls src="video/18566116280865.mp4"></video></div>
-        <div class="video-item"><video controls src="video/18566116477473.mp4"></video></div>
-        <div class="video-item"><video controls src="video/18566148917793.mp4"></video></div>
+    <div class="call-center">
+      <div class="call-name" id="callName">Алексей</div>
+      <div class="call-timer" id="callTimer">00:00</div>
+      <div class="call-ava" id="callAva">А</div>
+      <div class="call-hint">
+        📁 Во время звонка можно открыть<br>материалы из <b>MAX-Диска</b>
+      </div>
     </div>
 
-    <h2>Цены на срубы из хвойного леса</h2>
-    <table>
-        <thead>
-            <tr><th>Размер сруба / высота (м)</th><th>Цена (руб)</th></tr>
-        </thead>
-        <tbody>
-            <tr><td>3x3 x 2,3</td><td>55 200</td></tr>
-            <tr><td>3x4 x 2,3</td><td>64 400</td></tr>
-            <tr><td>4x4 x 2,3</td><td>73 600</td></tr>
-            <tr><td>3x5 x 2,3</td><td>73 600</td></tr>
-            <tr><td>4x5 x 2,3</td><td>82 800</td></tr>
-            <tr><td>5x5 x 2,5</td><td>100 000</td></tr>
-            <tr><td>4x6 x 2,5</td><td>125 000</td></tr>
-            <tr><td>5x6 x 2,5</td><td>137 500</td></tr>
-            <tr><td>6x6 x 2,7</td><td>162 000</td></tr>
-            <tr><td>6x7 x 2,7</td><td>210 600</td></tr>
-            <tr><td>7x7 x 3</td><td>252 000</td></tr>
-            <tr><td>6x8 x 3</td><td>252 000</td></tr>
-            <tr><td>7x8 x 3</td><td>270 000</td></tr>
-            <tr><td>8x8 x 3</td><td>369 600</td></tr>
-            <tr><td>8x9 x 3,3</td><td>392 700</td></tr>
-            <tr><td>9x9 x 3,3</td><td>415 800</td></tr>
-            <tr><td>8x10 x 3,3</td><td>415 800</td></tr>
-            <tr><td>10x10 x 3,3</td><td>462 000</td></tr>
-        </tbody>
-    </table>
+    <div class="call-controls">
+      <button class="call-ctrl">
+        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+      </button>
+      <button class="call-ctrl">
+        <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+      </button>
+      <button class="call-ctrl disk" onclick="openDiskInCall()">📁</button>
+      <button class="call-ctrl red" onclick="endCall()">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+      </button>
+    </div>
 
-    <section class="contact-box">
-        <h2>Контакты</h2>
-        <div class="phone">8 987 847 4818</div>
-        <div class="phone">66-01-22</div>
-        <p>Дополнительный номер: 8 905 884 2952</p>
-        <div class="email">Email: <a href="mailto:Sergej_shinkarev@mail.ru" style="color: var(--secondary);">Sergej_shinkarev@mail.ru</a></div>
-    </section>
+    <div class="disk-overlay" id="diskOverlay">
+      <div class="overlay-header">
+        <h3>📁 MAX-Диск — материалы</h3>
+        <button class="close" onclick="closeDiskInCall()">×</button>
+      </div>
+      <div class="overlay-files" id="overlayFiles"></div>
+    </div>
+  </div>
+
+  <div class="viewer" id="viewer">
+    <div class="live-banner" id="liveBanner">
+      <div class="live-dot"></div>
+      <span>Трансляция</span>
+      <small>Все видят этот материал</small>
+    </div>
+    <div class="overlay-header" id="viewerHeader">
+      <h3 id="viewerTitle">Файл</h3>
+      <button class="close" onclick="closeViewer()">×</button>
+    </div>
+    <div class="viewer-body" id="viewerBody"></div>
+  </div>
+
 </div>
 
+<input type="file" id="fileInput" accept=".png,.jpg,.jpeg,.docx" />
+
+<script>
+const chats = [
+  { id: 'bot', name: 'MAX-Диск', ava: '💾', cls: 'av3', last: 'Мини-приложение · файлы', time: 'сейчас', unread: 1, isBot: true, online: false },
+  { id: 'c1', name: 'Алексей', ava: 'А', cls: 'av1', last: 'Привет, как дела?', time: '22:20', unread: 1, online: true },
+  { id: 'c2', name: 'Марина', ava: 'М', cls: 'av10', last: 'Ок, договорились 👌', time: '21:45', unread: 0, online: true },
+  { id: 'c3', name: 'Дима', ava: 'Д', cls: 'av2', last: 'Скинь, пожалуйста, файл', time: '20:10', unread: 3, online: false },
+  { id: 'c4', name: 'Оля', ava: 'О', cls: 'av5', last: 'Увидимся завтра!', time: '19:33', unread: 0, online: false },
+  { id: 'c5', name: 'Рабочий чат', ava: 'Р', cls: 'av6', last: 'Совещание в 10:00', time: '18:50', unread: 12, online: false },
+  { id: 'c6', name: 'Сергей', ava: 'С', cls: 'av4', last: 'Спасибо большое!', time: '17:20', unread: 0, online: true },
+  { id: 'c7', name: 'Катя', ava: 'К', cls: 'av7', last: 'Ахахах, точно 😂', time: '16:05', unread: 2, online: false },
+  { id: 'c8', name: 'Никита', ava: 'Н', cls: 'av8', last: 'Ну что, погнали?', time: '14:30', unread: 0, online: true },
+  { id: 'c9', name: 'Лена', ava: 'Л', cls: 'av10', last: 'Доброе утро ☀️', time: '09:15', unread: 0, online: false },
+  { id: 'c10', name: 'Павел', ava: 'П', cls: 'av9', last: 'Всё готово, проверил', time: 'вчера', unread: 0, online: false },
+];
+
+const contacts = [
+  { id: 'u1', name: 'Алексей', ava: 'А', cls: 'av1', phone: '+7 900 123-45-67', online: true },
+  { id: 'u2', name: 'Марина', ava: 'М', cls: 'av10', phone: '+7 900 234-56-78', online: true },
+  { id: 'u3', name: 'Дима', ava: 'Д', cls: 'av2', phone: '+7 900 345-67-89', online: false },
+  { id: 'u4', name: 'Оля', ava: 'О', cls: 'av5', phone: '+7 900 456-78-90', online: false },
+  { id: 'u5', name: 'Сергей', ava: 'С', cls: 'av4', phone: '+7 900 567-89-01', online: true },
+];
+
+let callHistory = [
+  { id: 1, name: 'Марина', ava: 'М', cls: 'av10', type: 'in',  time: '21:30' },
+  { id: 2, name: 'Дима',   ava: 'Д', cls: 'av2',  type: 'out', time: '20:45' },
+  { id: 3, name: 'Катя',   ava: 'К', cls: 'av7',  type: 'miss',time: '16:10' },
+  { id: 4, name: 'Сергей', ava: 'С', cls: 'av4',  type: 'in',  time: '12:20' },
+];
+
+let files = [];
+let fileIdCounter = 1;
+
+const messagesStore = {
+  bot: [
+    { from: 'bot', text: 'Привет! Я бот MAX-Диск 💾\nСкидывай мне PNG, JPG или DOCX — я сохраню их.' },
+    { from: 'bot', text: 'Открой мини-апп кнопкой ниже 👇', miniapp: true },
+  ],
+  c1: [
+    { from: 'them', text: 'Привет!' },
+    { from: 'me', text: 'Привет, как дела?' },
+    { from: 'them', text: 'Всё отлично, а у тебя?' },
+    { from: 'me', text: 'Тоже норм 😊' },
+  ],
+  c2: [
+    { from: 'them', text: 'Ты сегодня свободен?' },
+    { from: 'me', text: 'Да, после шести' },
+    { from: 'them', text: 'Ок, договорились 👌' },
+  ],
+  c3: [{ from: 'them', text: 'Скинь, пожалуйста, файл' }],
+  c4: [{ from: 'them', text: 'Увидимся завтра!' }],
+  c5: [{ from: 'them', text: 'Совещание в 10:00, не опаздывайте' }],
+  c6: [{ from: 'them', text: 'Спасибо большое!' }],
+  c7: [{ from: 'them', text: 'Ахахах, точно 😂' }],
+  c8: [{ from: 'them', text: 'Ну что, погнали?' }],
+  c9: [{ from: 'them', text: 'Доброе утро ☀️' }],
+  c10: [{ from: 'them', text: 'Всё готово, проверил' }],
+};
+
+let currentChat = null;
+let callInterval = null;
+let callSeconds = 0;
+let uploadTarget = 'chat';
+let viewerOpenedInCall = false;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goTab(tab) {
+  if (tab === 'chats')    showScreen('screen-chats');
+  if (tab === 'contacts') showScreen('screen-contacts');
+  if (tab === 'calls')    showScreen('screen-calls');
+  if (tab === 'settings') showScreen('screen-settings');
+}
+
+function renderChats() {
+  const list = document.getElementById('chatList');
+  list.innerHTML = chats.map(c => `
+    <div class="chat-item" onclick="openChat('${c.id}')">
+      <div class="ava-wrap">
+        <div class="ava ${c.cls}">${c.ava}</div>
+        ${c.online ? '<div class="status-dot"></div>' : ''}
+      </div>
+      <div class="info">
+        <h4>${c.name}</h4>
+        <p>${c.last}</p>
+      </div>
+      <div class="meta">
+        <div>${c.time}</div>
+        ${c.unread ? `<div class="badge">${c.unread}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderContacts() {
+  const list = document.getElementById('contactsList');
+  list.innerHTML = contacts.map(u => `
+    <div class="contact-item">
+      <div class="ava ${u.cls}">${u.ava}</div>
+      <div class="cinfo">
+        <h4>${u.name}${u.online ? ' <span style="color:#2ecc71;font-size:12px">● онлайн</span>' : ''}</h4>
+        <p>${u.phone}</p>
+      </div>
+      <div class="cactions">
+        <button onclick="openContactChat('${u.name}')">💬</button>
+        <button onclick="callFromContact('${u.name}','${u.ava}','${u.cls}')">📞</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openContactChat(name) {
+  const chat = chats.find(c => c.name === name);
+  if (chat) openChat(chat.id);
+  else alert('Чат с ' + name + ' пока не создан');
+}
+
+function callFromContact(name, ava, cls) {
+  document.getElementById('callName').textContent = name;
+  document.getElementById('callAva').textContent = ava;
+  document.getElementById('callAva').className = 'call-ava ' + cls;
+
+  showScreen('screen-call');
+
+  callSeconds = 0;
+  document.getElementById('callTimer').textContent = '00:00';
+  clearInterval(callInterval);
+  callInterval = setInterval(() => {
+    callSeconds++;
+    const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+    const s = String(callSeconds % 60).padStart(2, '0');
+    document.getElementById('callTimer').textContent = `${m}:${s}`;
+  }, 1000);
+
+  callHistory.unshift({
+    id: Date.now(),
+    name, ava, cls, type: 'out',
+    time: new Date().toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'})
+  });
+  renderCalls();
+}
+
+function renderCalls() {
+  const list = document.getElementById('callsList');
+  if (!callHistory.length) {
+    list.innerHTML = `<div class="empty-state">История пуста</div>`;
+    return;
+  }
+  list.innerHTML = callHistory.map(c => {
+    let icon = '↗', cls = 'out', label = 'Исходящий';
+    if (c.type === 'in')   { icon = '↙'; cls = 'in';   label = 'Входящий'; }
+    if (c.type === 'miss') { icon = '✕'; cls = 'miss'; label = 'Пропущенный'; }
+    return `
+      <div class="call-item">
+        <div class="ava ${c.cls}">${c.ava}</div>
+        <div class="info">
+          <h4>${c.name}</h4>
+          <p class="${cls}">${icon} ${label} · ${c.time}</p>
+        </div>
+        <button class="call-back" onclick="callFromContact('${c.name}','${c.ava}','${c.cls}')">📞</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function openChat(id) {
+  currentChat = chats.find(c => c.id === id);
+  currentChat.unread = 0;
+  renderChats();
+
+  document.getElementById('chatHeader').innerHTML = `
+    <button class="back" onclick="showScreen('screen-chats')">←</button>
+    <div class="ava ${currentChat.cls}">${currentChat.ava}</div>
+    <div class="hinfo">
+      <h3>${currentChat.name}</h3>
+      <p>${currentChat.isBot ? 'бот' : (currentChat.online ? 'в сети' : 'был(а) недавно')}</p>
+    </div>
+  `;
+
+  const inputBar = document.getElementById('chatInputBar');
+  inputBar.innerHTML = `
+    <button class="icon-btn" onclick="triggerUpload('chat')">📎</button>
+    <input type="text" placeholder="Сообщение..." id="msgInput" onkeydown="if(event.key==='Enter')sendMsg()" />
+    <button class="icon-btn call" onclick="startCall()">📞</button>
+    <button class="icon-btn send" onclick="sendMsg()">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  `;
+
+  renderMessages();
+  showScreen('screen-chat');
+}
+
+function renderMessages() {
+  const box = document.getElementById('messages');
+  const msgs = messagesStore[currentChat.id] || [];
+
+  box.innerHTML = msgs.map(m => {
+    if (m.miniapp) {
+      return `<div class="msg bot" style="cursor:pointer;background:#2ecc71;color:#fff" onclick="openMiniApp()">
+        💾 Открыть MAX-Диск
+      </div>`;
+    }
+    if (m.file) {
+      const f = files.find(x => x.id === m.fileId);
+      if (!f) return '';
+      const preview = f.kind === 'image'
+        ? `<div class="file-ico"><img src="${f.dataUrl}"></div>`
+        : `<div class="file-ico">📄</div>`;
+      return `<div class="msg file-card" onclick="openViewer(${m.fileId})">
+        ${preview}
+        <div class="file-meta">
+          <div>${m.text}</div>
+          <small>${m.size} · открыть</small>
+        </div>
+      </div>`;
+    }
+    const cls = m.from === 'me' ? 'me' : 'bot';
+    return `<div class="msg ${cls}">${m.text.replace(/\n/g,'<br>')}</div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+function sendMsg() {
+  const input = document.getElementById('msgInput');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  if (!messagesStore[currentChat.id]) messagesStore[currentChat.id] = [];
+  messagesStore[currentChat.id].push({ from: 'me', text });
+  input.value = '';
+  renderMessages();
+
+  if (currentChat.isBot) {
+    setTimeout(() => {
+      messagesStore.bot.push({ from: 'bot', text: 'Принято! Кидай файлы через 📎' });
+      if (currentChat.id === 'bot') renderMessages();
+    }, 700);
+  }
+}
+
+function triggerUpload(target) {
+  uploadTarget = target || 'chat';
+  document.getElementById('fileInput').click();
+}
+
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const name = file.name;
+  const ext = name.split('.').pop().toLowerCase();
+  const size = (file.size / 1024 / 1024).toFixed(2) + ' МБ';
+  const id = fileIdCounter++;
+
+  if (['png','jpg','jpeg'].includes(ext)) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      files.push({ id, name, size, kind: 'image', dataUrl: ev.target.result });
+      afterUpload(id, name, size);
+    };
+    reader.readAsDataURL(file);
+  } else if (ext === 'docx') {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      files.push({ id, name, size, kind: 'docx', arrayBuffer: ev.target.result });
+      afterUpload(id, name, size);
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    alert('Только PNG, JPG, JPEG, DOCX');
+  }
+
+  e.target.value = '';
+});
+
+function afterUpload(id, name, size) {
+  if (uploadTarget === 'chat') {
+    if (!messagesStore[currentChat.id]) messagesStore[currentChat.id] = [];
+    messagesStore[currentChat.id].push({ from: 'me', file: true, fileId: id, text: name, size });
+    renderMessages();
+    if (currentChat.isBot) {
+      setTimeout(() => {
+        messagesStore.bot.push({ from: 'bot', text: `Файл «${name}» сохранён в MAX-Диске ✅` });
+        if (currentChat.id === 'bot') renderMessages();
+      }, 500);
+    }
+  } else {
+    renderFileGrid();
+  }
+}
+
+function openMiniApp() {
+  renderFileGrid();
+  showScreen('screen-miniapp');
+}
+
+function renderFileGrid() {
+  const grid = document.getElementById('fileGrid');
+  if (!files.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Пока нет файлов.<br>Загрузи PNG, JPG или DOCX.</div>`;
+    return;
+  }
+  grid.innerHTML = files.map(f => {
+    const preview = f.kind === 'image'
+      ? `<div class="fico"><img src="${f.dataUrl}"></div>`
+      : `<div class="fico" style="color:#2ecc71">📄</div>`;
+    return `<div class="file-card">
+      <button class="file-del" onclick="event.stopPropagation();deleteFile(${f.id})">×</button>
+      <div onclick="openViewer(${f.id})" style="display:flex;flex-direction:column;gap:10px;cursor:pointer">
+        ${preview}
+        <div>
+          <h5>${f.name}</h5>
+          <small>${f.size}</small>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteFile(id) {
+  if (!confirm('Удалить файл из MAX-Диска?')) return;
+  files = files.filter(f => f.id !== id);
+  // Удаляем сообщения с этим файлом
+  Object.keys(messagesStore).forEach(k => {
+    messagesStore[k] = messagesStore[k].filter(m => !(m.file && m.fileId === id));
+  });
+  // Обновляем всё, что открыто
+  if (document.getElementById('screen-miniapp').classList.contains('active')) {
+    renderFileGrid();
+  }
+  if (document.getElementById('diskOverlay').classList.contains('active')) {
+    openDiskInCall();
+  }
+  if (currentChat && document.getElementById('screen-chat').classList.contains('active')) {
+    renderMessages();
+  }
+}
+
+function startCall() {
+  const name = currentChat ? currentChat.name : 'Алексей';
+  const cls  = currentChat ? currentChat.cls  : 'av1';
+  const ava  = currentChat ? currentChat.ava  : 'А';
+
+  document.getElementById('callName').textContent = name;
+  document.getElementById('callAva').textContent = ava;
+  document.getElementById('callAva').className = 'call-ava ' + cls;
+
+  showScreen('screen-call');
+
+  callSeconds = 0;
+  document.getElementById('callTimer').textContent = '00:00';
+
+  clearInterval(callInterval);
+  callInterval = setInterval(() => {
+    callSeconds++;
+    const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+    const s = String(callSeconds % 60).padStart(2, '0');
+    document.getElementById('callTimer').textContent = `${m}:${s}`;
+  }, 1000);
+
+  callHistory.unshift({
+    id: Date.now(),
+    name, ava, cls, type: 'out',
+    time: new Date().toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'})
+  });
+  renderCalls();
+}
+
+function endCall() {
+  clearInterval(callInterval);
+  closeDiskInCall();
+  closeViewer();
+  viewerOpenedInCall = false;
+  if (currentChat) showScreen('screen-chat');
+  else showScreen('screen-chats');
+}
+
+function openDiskInCall() {
+  const box = document.getElementById('overlayFiles');
+  if (!files.length) {
+    box.innerHTML = `<div class="empty-state">В MAX-Диске пока пусто.<br>Загрузи файлы в чате с ботом.</div>`;
+  } else {
+    box.innerHTML = files.map(f => {
+      const preview = f.kind === 'image'
+        ? `<div class="fico"><img src="${f.dataUrl}"></div>`
+        : `<div class="fico">📄</div>`;
+      return `<div class="ov-file">
+        <div onclick="openViewer(${f.id}, true)" style="display:flex;align-items:center;gap:12px;flex:1;cursor:pointer;min-width:0">
+          ${preview}
+          <div class="oinfo">
+            <h4>${f.name}</h4>
+            <small>${f.size} · транслировать</small>
+          </div>
+        </div>
+        <button class="ov-del" onclick="event.stopPropagation();deleteFileFromOverlay(${f.id})">🗑</button>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('diskOverlay').classList.add('active');
+}
+
+function deleteFileFromOverlay(id) {
+  if (!confirm('Удалить файл из MAX-Диска?')) return;
+  files = files.filter(f => f.id !== id);
+  Object.keys(messagesStore).forEach(k => {
+    messagesStore[k] = messagesStore[k].filter(m => !(m.file && m.fileId === id));
+  });
+  openDiskInCall();
+  if (currentChat) renderMessages();
+}
+
+function closeDiskInCall() {
+  document.getElementById('diskOverlay').classList.remove('active');
+}
+
+function openViewer(id, inCall) {
+  const f = files.find(x => x.id === id);
+  if (!f) return;
+
+  viewerOpenedInCall = !!inCall;
+
+  document.getElementById('viewerTitle').textContent = f.name;
+  const body = document.getElementById('viewerBody');
+  const banner = document.getElementById('liveBanner');
+
+  if (inCall) banner.classList.add('active');
+  else banner.classList.remove('active');
+
+  if (f.kind === 'image') {
+    body.innerHTML = `<img src="${f.dataUrl}">`;
+  } else if (f.kind === 'docx') {
+    body.innerHTML = `<div class="docx-render" id="docxBox">Загрузка...</div>`;
+    mammoth.convertToHtml({ arrayBuffer: f.arrayBuffer })
+      .then(r => { document.getElementById('docxBox').innerHTML = r.value || '<p>Пусто</p>'; })
+      .catch(() => { document.getElementById('docxBox').innerHTML = '<p>Ошибка отображения</p>'; });
+  }
+  document.getElementById('viewer').classList.add('active');
+}
+
+function closeViewer() {
+  document.getElementById('viewer').classList.remove('active');
+  document.getElementById('liveBanner').classList.remove('active');
+}
+
+renderChats();
+renderContacts();
+renderCalls();
+</script>
 </body>
 </html>
